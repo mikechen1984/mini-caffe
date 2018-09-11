@@ -1,7 +1,7 @@
 # mini-caffe.cmake
 
-option(USE_CUDA "Use CUDA support" ON)
-option(USE_CUDNN "Use CUDNN support" ON)
+option(USE_CUDA "Use CUDA support" OFF)
+option(USE_CUDNN "Use CUDNN support" OFF)
 
 # select BLAS
 set(BLAS "openblas" CACHE STRING "Selected BLAS library")
@@ -19,80 +19,14 @@ endif()
 
 # include and library
 if(USE_CUDA)
-  if(MSVC)
-    include_directories(${CMAKE_CURRENT_LIST_DIR}/3rdparty/include
-                      ${CMAKE_CURRENT_LIST_DIR}/3rdparty/include/google
-                      ${CMAKE_CURRENT_LIST_DIR}/include)
-    link_directories(${CMAKE_CURRENT_LIST_DIR}/3rdparty/lib)
-    list(APPEND Caffe_LINKER_LIBS debug libprotobufd optimized libprotobuf)
-  else(MSVC)
     include_directories(${CMAKE_CURRENT_LIST_DIR}/include)
     list(APPEND Caffe_LINKER_LIBS protobuf)
-  endif(MSVC)
 else(USE_CUDA)
-  if(MSVC)
-    include_directories(${CMAKE_CURRENT_LIST_DIR}/3rdparty/include
-                      ${CMAKE_CURRENT_LIST_DIR}/3rdparty/include/openblas
-                      ${CMAKE_CURRENT_LIST_DIR}/3rdparty/include/google
-                      ${CMAKE_CURRENT_LIST_DIR}/include)
-    link_directories(${CMAKE_CURRENT_LIST_DIR}/3rdparty/lib)
-    list(APPEND Caffe_LINKER_LIBS debug libprotobufd optimized libprotobuf libopenblas)
-  else(MSVC)
-    if(APPLE)
-      include_directories(/usr/local/opt/openblas/include)
-      link_directories(/usr/local/opt/openblas/lib)
-    endif(APPLE)
-    include_directories(${CMAKE_CURRENT_LIST_DIR}/include)
-    list(APPEND Caffe_LINKER_LIBS protobuf)
-    if(BLAS STREQUAL "openblas")
-      list(APPEND Caffe_LINKER_LIBS openblas)
-      message(STATUS "Use OpenBLAS for blas library")
-    else()
-      list(APPEND Caffe_LINKER_LIBS blas)
-      message(STATUS "Use BLAS for blas library")
-    endif()
-  endif(MSVC)
+    include_directories(${CMAKE_CURRENT_LIST_DIR}/include
+                      /opt/intel/mkl/include)
+    link_directories(/opt/intel/mkl/lib/intel64 /opt/intel/lib/intel64)
+    list(APPEND Caffe_LINKER_LIBS protobuf libmkl_core)
 endif(USE_CUDA)
-
-if(MSVC)
-  if(USE_CUDA)
-    include_directories(${CMAKE_CURRENT_LIST_DIR}/3rdparty/include
-                      ${CMAKE_CURRENT_LIST_DIR}/3rdparty/include/google
-                      ${CMAKE_CURRENT_LIST_DIR}/include)
-    link_directories(${CMAKE_CURRENT_LIST_DIR}/3rdparty/lib)
-    list(APPEND Caffe_LINKER_LIBS debug libprotobufd optimized libprotobuf)
-  else(USE_CUDA)
-    include_directories(${CMAKE_CURRENT_LIST_DIR}/3rdparty/include
-                      ${CMAKE_CURRENT_LIST_DIR}/3rdparty/include/openblas
-                      ${CMAKE_CURRENT_LIST_DIR}/3rdparty/include/google
-                      ${CMAKE_CURRENT_LIST_DIR}/include)
-    link_directories(${CMAKE_CURRENT_LIST_DIR}/3rdparty/lib)
-    list(APPEND Caffe_LINKER_LIBS debug libprotobufd optimized libprotobuf libopenblas)
-  endif(USE_CUDA)
-
-else(MSVC)
-  if(APPLE)
-    if(USE_CUDA)
-      #skip openblas
-    else(USE_CUDA)
-      include_directories(/usr/local/opt/openblas/include)
-      link_directories(/usr/local/opt/openblas/lib)
-    endif(USE_CUDA)
-  endif(APPLE)
-  include_directories(${CMAKE_CURRENT_LIST_DIR}/include)
-  list(APPEND Caffe_LINKER_LIBS protobuf)
-  if(USE_CUDA)
-    #skip openblas
-  else(USE_CUDA)
-    if(BLAS STREQUAL "openblas")
-      list(APPEND Caffe_LINKER_LIBS openblas)
-      message(STATUS "Use OpenBLAS for blas library")
-    else()
-      list(APPEND Caffe_LINKER_LIBS blas)
-      message(STATUS "Use BLAS for blas library")
-    endif()
-  endif(USE_CUDA)
-endif(MSVC)
 
 # source file structure
 file(GLOB CAFFE_INCLUDE ${CMAKE_CURRENT_LIST_DIR}/include/caffe/*.h
@@ -142,16 +76,6 @@ if(HAVE_CUDA)
   endif()
   caffe_cuda_compile(CAFFE_CUDA_OBJS ${CAFFE_CUDA_CODE})
   list(APPEND CAFFE_COMPILE_CODE ${CAFFE_CUDA_OBJS})
-endif()
-
-# java support
-if(JNI_FOUND)
-  message(STATUS "We have JAVA support")
-  file(GLOB CAFFE_SRC_JNI ${CMAKE_CURRENT_LIST_DIR}/src/jni/*.h
-                          ${CMAKE_CURRENT_LIST_DIR}/src/jni/*.c)
-  list(APPEND CAFFE_COMPILE_CODE ${CAFFE_SRC_JNI})
-  include_directories(${JNI_INCLUDE_DIRS})
-  list(APPEND Caffe_LINKER_LIBS ${JNI_LIBRARIES})
 endif()
 
 # file structure

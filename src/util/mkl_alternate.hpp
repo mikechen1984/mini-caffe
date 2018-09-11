@@ -2,8 +2,9 @@
 #define CAFFE_UTIL_MKL_ALTERNATE_H_
 
 extern "C" {
-#include <cblas.h>
+//#include <cblas.h>
 }
+#include <mkl.h>
 #include <math.h>
 
 // A simple way to define the vsl unary functions. The operation should
