@@ -1,3 +1,0 @@
-/home/mike/Downloads/mini-caffe-master/CMakeFiles/rebuild_cache.dir
-/home/mike/Downloads/mini-caffe-master/CMakeFiles/edit_cache.dir
-/home/mike/Downloads/mini-caffe-master/CMakeFiles/caffe.dir
