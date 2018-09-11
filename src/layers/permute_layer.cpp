@@ -87,7 +87,9 @@ void PermuteLayer::Reshape(const vector<Blob*>& bottom,
     }
   }
 }
-
+#ifdef USE_CUDA
+STUB_CPU(PermuteLayer);
+#else
 void PermuteLayer::Forward_cpu(const vector<Blob*>& bottom,
                                const vector<Blob*>& top) {
   if (need_permute_) {
@@ -105,7 +107,6 @@ void PermuteLayer::Forward_cpu(const vector<Blob*>& bottom,
   }
 }
 
-#ifndef USE_CUDA
 STUB_GPU(PermuteLayer);
 #endif
 

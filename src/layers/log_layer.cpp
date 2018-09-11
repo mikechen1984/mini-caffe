@@ -28,7 +28,9 @@ void LogLayer::LayerSetUp(const vector<Blob*>& bottom,
   input_shift_ = this->layer_param_.log_param().shift();
   backward_num_scale_ = input_scale_ / log_base;
 }
-
+#ifdef USE_CUDA
+STUB_CPU(LogLayer);
+#else
 void LogLayer::Forward_cpu(const vector<Blob*>& bottom,
                            const vector<Blob*>& top) {
   const int count = bottom[0]->count();
@@ -51,7 +53,7 @@ void LogLayer::Forward_cpu(const vector<Blob*>& bottom,
   }
 }
 
-#ifndef USE_CUDA
+
 STUB_GPU(LogLayer);
 #endif
 

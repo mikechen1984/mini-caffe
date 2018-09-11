@@ -25,7 +25,9 @@ void ExpLayer::LayerSetUp(const vector<Blob*>& bottom,
   outer_scale_ = (input_shift == static_cast<real_t>(0)) ? 1 :
      ( (base != static_cast<real_t>(-1)) ? pow(base, input_shift) : exp(input_shift) );
 }
-
+#ifdef USE_CUDA
+STUB_CPU(ExpLayer);
+#else
 void ExpLayer::Forward_cpu(const vector<Blob*>& bottom,
                            const vector<Blob*>& top) {
   const int count = bottom[0]->count();
@@ -42,7 +44,7 @@ void ExpLayer::Forward_cpu(const vector<Blob*>& bottom,
   }
 }
 
-#ifndef USE_CUDA
+
 STUB_GPU(ExpLayer);
 #endif
 

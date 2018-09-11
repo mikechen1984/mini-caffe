@@ -76,7 +76,9 @@ void InnerProductLayer::Reshape(const vector<Blob*>& bottom,
     caffe_set(M_, static_cast<real_t>(1), bias_multiplier_.mutable_cpu_data());
   }
 }
-
+#ifdef USE_CUDA
+STUB_CPU(InnerProductLayer);
+#else
 void InnerProductLayer::Forward_cpu(const vector<Blob*>& bottom,
                                     const vector<Blob*>& top) {
   const real_t* bottom_data = bottom[0]->cpu_data();
@@ -92,7 +94,7 @@ void InnerProductLayer::Forward_cpu(const vector<Blob*>& bottom,
   }
 }
 
-#ifndef USE_CUDA
+
 STUB_GPU(InnerProductLayer);
 #endif
 

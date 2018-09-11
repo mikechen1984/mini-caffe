@@ -10,6 +10,10 @@ void ThresholdLayer::LayerSetUp(const vector<Blob*>& bottom,
   threshold_ = this->layer_param_.threshold_param().threshold();
 }
 
+#ifdef USE_CUDA
+STUB_CPU(ThresholdLayer);
+#else
+
 void ThresholdLayer::Forward_cpu(const vector<Blob*>& bottom,
                                  const vector<Blob*>& top) {
   const real_t* bottom_data = bottom[0]->cpu_data();
@@ -20,7 +24,6 @@ void ThresholdLayer::Forward_cpu(const vector<Blob*>& bottom,
   }
 }
 
-#ifndef USE_CUDA
 STUB_GPU(ThresholdLayer);
 #endif
 

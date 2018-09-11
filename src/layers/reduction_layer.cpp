@@ -35,7 +35,9 @@ void ReductionLayer::Reshape(const vector<Blob*>& bottom,
     coeff_ /= dim_;
   }
 }
-
+#ifdef USE_CUDA
+STUB_CPU(ReductionLayer);
+#else
 void ReductionLayer::Forward_cpu(const vector<Blob*>& bottom,
                                  const vector<Blob*>& top) {
   const real_t* bottom_data = bottom[0]->cpu_data();
@@ -70,7 +72,7 @@ void ReductionLayer::Forward_cpu(const vector<Blob*>& bottom,
   }
 }
 
-#ifndef USE_CUDA
+
 STUB_GPU(ReductionLayer);
 #endif
 

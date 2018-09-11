@@ -11,6 +11,10 @@
 
 namespace caffe {
 
+#ifdef USE_CUDA
+STUB_CPU(TanHLayer);
+#else
+
 void TanHLayer::Forward_cpu(const vector<Blob*>& bottom,
                             const vector<Blob*>& top) {
   const real_t* bottom_data = bottom[0]->cpu_data();
@@ -21,10 +25,8 @@ void TanHLayer::Forward_cpu(const vector<Blob*>& bottom,
   }
 }
 
-#ifndef USE_CUDA
 STUB_GPU(TanHLayer);
 #endif
-
 // Creator
 
 }  // namespace caffe

@@ -54,7 +54,9 @@ void FilterLayer::Reshape(const vector<Blob*>& bottom,
     top[t]->Reshape(shape_top);
   }
 }
-
+#ifdef USE_CUDA
+STUB_CPU(FilterLayer);
+#else
 void FilterLayer::Forward_cpu(const vector<Blob*>& bottom,
                               const vector<Blob*>& top) {
   int new_tops_num = indices_to_forward_.size();
@@ -72,7 +74,6 @@ void FilterLayer::Forward_cpu(const vector<Blob*>& bottom,
   }
 }
 
-#ifndef USE_CUDA
 STUB_GPU(FilterLayer);
 #endif
 

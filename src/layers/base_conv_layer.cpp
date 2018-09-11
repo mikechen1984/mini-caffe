@@ -251,6 +251,50 @@ void BaseConvolutionLayer::Reshape(const vector<Blob*>& bottom,
   }
 }
 
+#ifdef USE_CUDA
+
+void BaseConvolutionLayer::forward_gpu_gemm(const real_t* input,
+    const real_t* weights, real_t* output, bool skip_im2col) {
+  const real_t* col_buff = input;
+  if (!is_1x1_) {
+    if (!skip_im2col) {
+      conv_im2col_gpu(input, col_buffer_.mutable_gpu_data());
+    }
+    col_buff = col_buffer_.gpu_data();
+  }
+  for (int g = 0; g < group_; ++g) {
+    caffe_gpu_gemm(CblasNoTrans, CblasNoTrans, conv_out_channels_ / group_,
+      conv_out_spatial_dim_, kernel_dim_,
+      static_cast<real_t>(1), weights + weight_offset_ * g, col_buff + col_offset_ * g,
+      static_cast<real_t>(0), output + output_offset_ * g);
+  }
+}
+
+void BaseConvolutionLayer::forward_gpu_bias(real_t* output,
+    const real_t* bias) {
+  caffe_gpu_gemm(CblasNoTrans, CblasNoTrans, num_output_,
+    out_spatial_dim_, 1, static_cast<real_t>(1), bias, bias_multiplier_.gpu_data(),
+    static_cast<real_t>(1), output);
+}
+
+void BaseConvolutionLayer::backward_gpu_gemm(const real_t* output,
+    const real_t* weights, real_t* input) {
+  real_t* col_buff = col_buffer_.mutable_gpu_data();
+  if (is_1x1_) {
+    col_buff = input;
+  }
+  for (int g = 0; g < group_; ++g) {
+    caffe_gpu_gemm(CblasTrans, CblasNoTrans, kernel_dim_,
+      conv_out_spatial_dim_, conv_out_channels_ / group_,
+      static_cast<real_t>(1), weights + weight_offset_ * g, output + output_offset_ * g,
+      static_cast<real_t>(0), col_buff + col_offset_ * g);
+  }
+  if (!is_1x1_) {
+    conv_col2im_gpu(col_buff, input);
+  }
+}
+#else
+
 void BaseConvolutionLayer::forward_cpu_gemm(const real_t* input,
                                             const real_t* weights,
                                             real_t* output,
@@ -292,49 +336,6 @@ void BaseConvolutionLayer::backward_cpu_gemm(const real_t* output,
   }
   if (!is_1x1_) {
     conv_col2im_cpu(col_buff, input);
-  }
-}
-
-#ifdef USE_CUDA
-
-void BaseConvolutionLayer::forward_gpu_gemm(const real_t* input,
-    const real_t* weights, real_t* output, bool skip_im2col) {
-  const real_t* col_buff = input;
-  if (!is_1x1_) {
-    if (!skip_im2col) {
-      conv_im2col_gpu(input, col_buffer_.mutable_gpu_data());
-    }
-    col_buff = col_buffer_.gpu_data();
-  }
-  for (int g = 0; g < group_; ++g) {
-    caffe_gpu_gemm(CblasNoTrans, CblasNoTrans, conv_out_channels_ / group_,
-      conv_out_spatial_dim_, kernel_dim_,
-      static_cast<real_t>(1), weights + weight_offset_ * g, col_buff + col_offset_ * g,
-      static_cast<real_t>(0), output + output_offset_ * g);
-  }
-}
-
-void BaseConvolutionLayer::forward_gpu_bias(real_t* output,
-    const real_t* bias) {
-  caffe_gpu_gemm(CblasNoTrans, CblasNoTrans, num_output_,
-    out_spatial_dim_, 1, static_cast<real_t>(1), bias, bias_multiplier_.gpu_data(),
-    static_cast<real_t>(1), output);
-}
-
-void BaseConvolutionLayer::backward_gpu_gemm(const real_t* output,
-    const real_t* weights, real_t* input) {
-  real_t* col_buff = col_buffer_.mutable_gpu_data();
-  if (is_1x1_) {
-    col_buff = input;
-  }
-  for (int g = 0; g < group_; ++g) {
-    caffe_gpu_gemm(CblasTrans, CblasNoTrans, kernel_dim_,
-      conv_out_spatial_dim_, conv_out_channels_ / group_,
-      static_cast<real_t>(1), weights + weight_offset_ * g, output + output_offset_ * g,
-      static_cast<real_t>(0), col_buff + col_offset_ * g);
-  }
-  if (!is_1x1_) {
-    conv_col2im_gpu(col_buff, input);
   }
 }
 

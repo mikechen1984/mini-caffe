@@ -64,9 +64,18 @@ inline int CAFFE_GET_BLOCKS(const int N) {
 void classname::Forward_gpu(const vector<Blob*>& bottom,           \
                             const vector<Blob*>& top) { NO_GPU; }
 
+#define STUB_CPU(classname)                                        \
+void classname::Forward_cpu(const vector<Blob*>& bottom,           \
+                            const vector<Blob*>& top) { NO_CPU; }
+
 #define STUB_GPU_FORWARD(classname, funcname)                          \
 void classname::funcname##_##gpu(const vector<Blob*>& bottom,          \
                                  const vector<Blob*>& top) { NO_GPU; }
+
+
+#define STUB_CPU_FORWARD(classname, funcname)                          \
+void classname::funcname##_##cpu(const vector<Blob*>& bottom,          \
+                                 const vector<Blob*>& top) { NO_CPU; }
 
 namespace caffe {
 

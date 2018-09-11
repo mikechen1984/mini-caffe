@@ -23,7 +23,9 @@ void DeconvolutionLayer::compute_output_shape() {
     this->output_shape_.push_back(output_dim);
   }
 }
-
+#ifdef USE_CUDA
+STUB_CPU(DeconvolutionLayer);
+#else
 void DeconvolutionLayer::Forward_cpu(const vector<Blob*>& bottom,
                                      const vector<Blob*>& top) {
   const real_t* weight = this->blobs_[0]->cpu_data();
@@ -41,7 +43,6 @@ void DeconvolutionLayer::Forward_cpu(const vector<Blob*>& bottom,
   }
 }
 
-#ifndef USE_CUDA
 STUB_GPU(DeconvolutionLayer);
 #endif
 

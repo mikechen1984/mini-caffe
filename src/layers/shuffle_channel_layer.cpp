@@ -32,7 +32,9 @@ void ShuffleChannelLayer::Reshape(const vector<Blob*> &bottom,
   int width_ = bottom[0]->width();
   top[0]->Reshape(bottom[0]->num(), channels_, height_, width_);
 }
-
+#ifdef USE_CUDA
+STUB_CPU(ShuffleChannelLayer);
+#else
 void ShuffleChannelLayer::Forward_cpu(const vector<Blob*>& bottom,
                                       const vector<Blob*>& top) {
   const real_t* bottom_data = bottom[0]->cpu_data();
@@ -54,7 +56,6 @@ void ShuffleChannelLayer::Forward_cpu(const vector<Blob*>& bottom,
   //caffe_copy(bottom[0]->count(), temp_blob_.cpu_data(), top_data);
 }
 
-#ifndef USE_CUDA
 STUB_GPU(ShuffleChannelLayer);
 #endif
 

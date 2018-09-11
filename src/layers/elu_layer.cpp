@@ -4,7 +4,9 @@
 #include "./elu_layer.hpp"
 
 namespace caffe {
-
+#ifdef USE_CUDA
+STUB_CPU(ELULayer);
+#else
 void ELULayer::Forward_cpu(const vector<Blob*>& bottom,
                            const vector<Blob*>& top) {
   const real_t* bottom_data = bottom[0]->cpu_data();
@@ -17,7 +19,6 @@ void ELULayer::Forward_cpu(const vector<Blob*>& bottom,
   }
 }
 
-#ifndef USE_CUDA
 STUB_GPU(ELULayer);
 #endif
 

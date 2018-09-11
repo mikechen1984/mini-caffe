@@ -100,7 +100,9 @@ void ConvolutionDepthwiseLayer::Reshape(const vector<Blob*>& bottom,
   top_shape.push_back((bottom[0]->width() + 2 * pad_w_ - (dilation_w_ * (kernel_w_ - 1) + 1)) / stride_w_ + 1);
   top[0]->Reshape(top_shape);
 }
-
+#ifdef USE_CUDA
+STUB_CPU(ConvolutionDepthwiseLayer);
+#else
 void ConvolutionDepthwiseLayer::Forward_cpu(const vector<Blob*>& bottom,
                                             const vector<Blob*>& top) {
   const int num = top[0]->num();
@@ -151,7 +153,6 @@ void ConvolutionDepthwiseLayer::Forward_cpu(const vector<Blob*>& bottom,
   }
 }
 
-#ifndef USE_CUDA
 STUB_GPU(ConvolutionDepthwiseLayer);
 #endif
 

@@ -71,6 +71,9 @@ void DetectionOutputLayer::Reshape(const vector<Blob*>& bottom,
   top[0]->Reshape(top_shape);
 }
 
+#ifdef USE_CUDA
+STUB_CPU(DetectionOutputLayer);
+#else
 void DetectionOutputLayer::Forward_cpu(const vector<Blob*>& bottom,
                                        const vector<Blob*>& top) {
   const real_t* loc_data = bottom[0]->cpu_data();
@@ -225,7 +228,6 @@ void DetectionOutputLayer::Forward_cpu(const vector<Blob*>& bottom,
   }
 }
 
-#ifndef USE_CUDA
 STUB_GPU(DetectionOutputLayer);
 #endif
 

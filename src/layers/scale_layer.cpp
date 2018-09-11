@@ -92,7 +92,9 @@ void ScaleLayer::Reshape(const vector<Blob*>& bottom,
     bias_layer_->Reshape(bias_bottom_vec_, top);
   }
 }
-
+#ifdef USE_CUDA
+STUB_CPU(ScaleLayer);
+#else
 void ScaleLayer::Forward_cpu(const vector<Blob*>& bottom,
                              const vector<Blob*>& top) {
   const real_t* bottom_data = bottom[0]->cpu_data();
@@ -112,7 +114,7 @@ void ScaleLayer::Forward_cpu(const vector<Blob*>& bottom,
   }
 }
 
-#ifndef USE_CUDA
+
 STUB_GPU(ScaleLayer);
 #endif
 

@@ -73,7 +73,9 @@ void BNLayer::Reshape(const vector<Blob*>& bottom,
   caffe_set(batch_sum_multiplier_.count(), static_cast<real_t>(1),
       batch_sum_multiplier_.mutable_cpu_data());
 }
-
+#ifdef USE_CUDA
+STUB_CPU(BNLayer);
+#else
 void BNLayer::Forward_cpu(const vector<Blob*>& bottom,
                           const vector<Blob*>& top) {
   const real_t* const_bottom_data = bottom[0]->cpu_data();
@@ -146,7 +148,7 @@ void BNLayer::Forward_cpu(const vector<Blob*>& bottom,
       broadcast_buffer_.cpu_data(), top_data);
 }
 
-#ifndef USE_CUDA
+
 STUB_GPU(BNLayer);
 #endif
 

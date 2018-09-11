@@ -5,6 +5,38 @@
 
 namespace caffe {
 
+void caffe_copy(const int N, const real_t* X, real_t* Y) {
+  if (X != Y) {
+    if (Caffe::mode() == Caffe::GPU) {
+#ifdef USE_CUDA
+      // NOLINT_NEXT_LINE(caffe/alt_fn)
+      CUDA_CHECK(cudaMemcpy(Y, X, sizeof(real_t) * N, cudaMemcpyDefault));
+#else
+      NO_GPU;
+#endif
+    }
+    else {
+      memcpy(Y, X, sizeof(real_t) * N);  // NOLINT(caffe/alt_fn)
+    }
+  }
+}
+
+void caffe_set(const int N, const real_t alpha, real_t* Y) {
+  if (alpha == 0) {
+    memset(Y, 0, sizeof(real_t) * N);  // NOLINT(caffe/alt_fn)
+    return;
+  }
+  for (int i = 0; i < N; ++i) {
+    Y[i] = alpha;
+  }
+}
+
+void caffe_sqr(const int n, const float* a, float* y) {
+  vsSqr(n, a, y);
+}
+#ifdef USE_CUDA
+//skip complie cpu version
+#else
 void caffe_cpu_gemm(const CBLAS_TRANSPOSE TransA,
     const CBLAS_TRANSPOSE TransB, const int M, const int N, const int K,
     const float alpha, const float* A, const float* B, const float beta,
@@ -24,15 +56,6 @@ void caffe_cpu_gemv(const CBLAS_TRANSPOSE TransA, const int M,
 void caffe_axpy(const int N, const float alpha, const float* X,
     float* Y) { cblas_saxpy(N, alpha, X, 1, Y, 1); }
 
-void caffe_set(const int N, const real_t alpha, real_t* Y) {
-  if (alpha == 0) {
-    memset(Y, 0, sizeof(real_t) * N);  // NOLINT(caffe/alt_fn)
-    return;
-  }
-  for (int i = 0; i < N; ++i) {
-    Y[i] = alpha;
-  }
-}
 
 void caffe_add_scalar(const int N, const float alpha, float* Y) {
   for (int i = 0; i < N; ++i) {
@@ -43,22 +66,6 @@ void caffe_add_scalar(const int N, const float alpha, float* Y) {
 void caffe_add_scalar(const int N, const double alpha, double* Y) {
   for (int i = 0; i < N; ++i) {
     Y[i] += alpha;
-  }
-}
-
-void caffe_copy(const int N, const real_t* X, real_t* Y) {
-  if (X != Y) {
-    if (Caffe::mode() == Caffe::GPU) {
-#ifdef USE_CUDA
-      // NOLINT_NEXT_LINE(caffe/alt_fn)
-      CUDA_CHECK(cudaMemcpy(Y, X, sizeof(real_t) * N, cudaMemcpyDefault));
-#else
-      NO_GPU;
-#endif
-    }
-    else {
-      memcpy(Y, X, sizeof(real_t) * N);  // NOLINT(caffe/alt_fn)
-    }
   }
 }
 
@@ -91,10 +98,6 @@ void caffe_powx(const int n, const float* a, const float b, float* y) {
   vsPowx(n, a, b, y);
 }
 
-void caffe_sqr(const int n, const float* a, float* y) {
-  vsSqr(n, a, y);
-}
-
 void caffe_exp(const int n, const float* a, float* y) {
   vsExp(n, a, y);
 }
@@ -125,5 +128,5 @@ void caffe_cpu_scale(const int n, const float alpha, const float *x,
   cblas_scopy(n, x, 1, y, 1);
   cblas_sscal(n, alpha, y, 1);
 }
-
+#endif
 }  // namespace caffe

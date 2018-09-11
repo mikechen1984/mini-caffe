@@ -6,7 +6,9 @@
 #include "../util/math_functions.hpp"
 
 namespace caffe {
-
+#ifdef USE_CUDA
+STUB_CPU(DropoutLayer);
+#else
 void DropoutLayer::Forward_cpu(const vector<Blob*>& bottom,
                                const vector<Blob*>& top) {
   const real_t* bottom_data = bottom[0]->cpu_data();
@@ -15,7 +17,6 @@ void DropoutLayer::Forward_cpu(const vector<Blob*>& bottom,
   caffe_copy(bottom[0]->count(), bottom_data, top_data);
 }
 
-#ifndef USE_CUDA
 STUB_GPU(DropoutLayer);
 #endif
 

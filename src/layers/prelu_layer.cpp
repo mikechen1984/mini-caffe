@@ -48,6 +48,9 @@ void PReLULayer::Reshape(const vector<Blob*>& bottom,
       << "Number of axes of bottom blob must be >=2.";
   top[0]->ReshapeLike(*bottom[0]);
 }
+#ifdef USE_CUDA
+STUB_CPU(PReLULayer);
+#else
 
 void PReLULayer::Forward_cpu(const vector<Blob*>& bottom,
                              const vector<Blob*>& top) {
@@ -83,7 +86,6 @@ void PReLULayer::Forward_cpu(const vector<Blob*>& bottom,
   }
 }
 
-#ifndef USE_CUDA
 STUB_GPU(PReLULayer);
 #endif
 

@@ -49,7 +49,9 @@ void ConcatLayer::Reshape(const vector<Blob*>& bottom,
     top[0]->ShareData(*bottom[0]);
   }
 }
-
+#ifdef USE_CUDA
+STUB_CPU(ConcatLayer);
+#else
 void ConcatLayer::Forward_cpu(const vector<Blob*>& bottom,
                               const vector<Blob*>& top) {
   if (bottom.size() == 1) { return; }
@@ -69,7 +71,6 @@ void ConcatLayer::Forward_cpu(const vector<Blob*>& bottom,
   }
 }
 
-#ifndef USE_CUDA
 STUB_GPU(ConcatLayer);
 #endif
 

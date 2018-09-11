@@ -82,7 +82,9 @@ void NormalizeLayer::Reshape(const vector<Blob*>& bottom,
     buffer_spatial_.Reshape(1, 1, bottom[0]->height(), bottom[0]->width());
   }
 }
-
+#ifdef USE_CUDA
+STUB_CPU(NormalizeLayer);
+#else
 void NormalizeLayer::Forward_cpu(const vector<Blob*>& bottom,
                                  const vector<Blob*>& top) {
   const real_t* bottom_data = bottom[0]->cpu_data();
@@ -134,7 +136,7 @@ void NormalizeLayer::Forward_cpu(const vector<Blob*>& bottom,
   }
 }
 
-#ifndef USE_CUDA
+
 STUB_GPU(NormalizeLayer);
 #endif
 

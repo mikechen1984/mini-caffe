@@ -33,7 +33,9 @@ void ROIPoolingLayer::Reshape(const vector<Blob*>& bottom,
   top[0]->Reshape(bottom[1]->num(), channels_, pooled_height_,
       pooled_width_);
 }
-
+#ifdef USE_CUDA
+STUB_CPU(ROIPoolingLayer);
+#else
 void ROIPoolingLayer::Forward_cpu(const vector<Blob*>& bottom,
                                   const vector<Blob*>& top) {
   const real_t* bottom_data = bottom[0]->cpu_data();
@@ -108,7 +110,6 @@ void ROIPoolingLayer::Forward_cpu(const vector<Blob*>& bottom,
   }
 }
 
-#ifndef USE_CUDA
 STUB_GPU(ROIPoolingLayer);
 #endif
 

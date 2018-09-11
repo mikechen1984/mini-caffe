@@ -19,6 +19,9 @@ void TileLayer::Reshape(const vector<Blob*>& bottom,
   inner_dim_ = bottom[0]->count(axis_);
 }
 
+#ifdef USE_CUDA
+STUB_CPU(TileLayer);
+#else
 void TileLayer::Forward_cpu(const vector<Blob*>& bottom,
                             const vector<Blob*>& top) {
   const real_t* bottom_data = bottom[0]->cpu_data();
@@ -32,7 +35,6 @@ void TileLayer::Forward_cpu(const vector<Blob*>& bottom,
   }
 }
 
-#ifndef USE_CUDA
 STUB_GPU(TileLayer);
 #endif
 

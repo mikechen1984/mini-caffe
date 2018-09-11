@@ -68,7 +68,9 @@ void BatchNormLayer::Reshape(const vector<Blob*>& bottom,
       batch_sum_multiplier_.mutable_cpu_data());
   }
 }
-
+#ifdef USE_CUDA
+STUB_CPU(BatchNormLayer);
+#else
 void BatchNormLayer::Forward_cpu(const vector<Blob*>& bottom,
                                  const vector<Blob*>& top) {
   const real_t* bottom_data = bottom[0]->cpu_data();
@@ -135,7 +137,6 @@ void BatchNormLayer::Forward_cpu(const vector<Blob*>& bottom,
   caffe_div(temp_.count(), top_data, temp_.cpu_data(), top_data);
 }
 
-#ifndef USE_CUDA
 STUB_GPU(BatchNormLayer);
 #endif
 

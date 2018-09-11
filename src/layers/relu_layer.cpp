@@ -8,7 +8,9 @@
 #endif  // USE_CUDNN
 
 namespace caffe {
-
+#ifdef USE_CUDA
+STUB_CPU(ReLULayer);
+#else
 void ReLULayer::Forward_cpu(const vector<Blob*>& bottom,
                             const vector<Blob*>& top) {
   const real_t* bottom_data = bottom[0]->cpu_data();
@@ -28,7 +30,6 @@ void ReLULayer::Forward_cpu(const vector<Blob*>& bottom,
   }
 }
 
-#ifndef USE_CUDA
 STUB_GPU(ReLULayer);
 #endif
 

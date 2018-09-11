@@ -257,7 +257,9 @@ void ProposalLayer::Reshape(const vector<Blob*>& bottom,
     top[1]->Reshape(top_shape);
   }
 }
-
+#ifdef USE_CUDA
+STUB_CPU(ProposalLayer);
+#else
 void ProposalLayer::Forward_cpu(const vector<Blob*>& bottom,
                                 const vector<Blob*>& top) {
   const real_t* anchors_score_map = bottom[0]->cpu_data();
@@ -319,7 +321,6 @@ void ProposalLayer::Forward_cpu(const vector<Blob*>& bottom,
   }
 }
 
-#ifndef USE_CUDA
 STUB_GPU(ProposalLayer);
 #endif
 

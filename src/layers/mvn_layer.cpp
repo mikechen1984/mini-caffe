@@ -30,6 +30,9 @@ void MVNLayer::Reshape(const vector<Blob*>& bottom,
   temp_.set_name(this->layer_param_.name() + "__temp__");
 }
 
+#ifdef USE_CUDA
+STUB_CPU(MVNLayer);
+#else
 void MVNLayer::Forward_cpu(const vector<Blob*>& bottom,
                           const vector<Blob*>& top) {
   const real_t* bottom_data = bottom[0]->cpu_data();
@@ -72,8 +75,8 @@ void MVNLayer::Forward_cpu(const vector<Blob*>& bottom,
   }
 }
 
-#ifndef USE_CUDA
 STUB_GPU(MVNLayer);
+
 #endif
 
 

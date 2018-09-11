@@ -13,7 +13,9 @@ void PowerLayer::LayerSetUp(const vector<Blob*>& bottom,
   shift_ = this->layer_param_.power_param().shift();
   diff_scale_ = power_  * scale_;
 }
-
+#ifdef USE_CUDA
+STUB_CPU(PowerLayer);
+#else
 // Compute y = (shift + scale * x)^power
 void PowerLayer::Forward_cpu(const vector<Blob*>& bottom,
                              const vector<Blob*>& top) {
@@ -38,7 +40,7 @@ void PowerLayer::Forward_cpu(const vector<Blob*>& bottom,
   }
 }
 
-#ifndef USE_CUDA
+
 STUB_GPU(PowerLayer);
 #endif
 

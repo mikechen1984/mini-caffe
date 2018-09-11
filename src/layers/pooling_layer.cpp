@@ -112,6 +112,9 @@ void PoolingLayer::Reshape(const vector<Blob*>& bottom,
   }
 }
 
+#ifdef USE_CUDA
+STUB_CPU(PoolingLayer);
+#else
 // TODO(Yangqing): Is there a faster way to do pooling in the channel-first
 // case?
 void PoolingLayer::Forward_cpu(const vector<Blob*>& bottom,
@@ -188,7 +191,6 @@ void PoolingLayer::Forward_cpu(const vector<Blob*>& bottom,
   }
 }
 
-#ifndef USE_CUDA
 STUB_GPU(PoolingLayer);
 #endif
 

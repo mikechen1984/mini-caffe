@@ -41,7 +41,9 @@ void PSROIPoolingLayer::Reshape(const vector<Blob*>& bottom,
   width_ = bottom[0]->width();
   top[0]->Reshape(bottom[1]->num(), output_dim_, pooled_height_, pooled_width_);
 }
-
+#ifdef USE_CUDA
+STUB_CPU(PSROIPoolingLayer);
+#else
 void PSROIPoolingLayer::Forward_cpu(const vector<Blob*>& bottom,
                                     const vector<Blob*>& top) {
   const real_t* bottom_data = bottom[0]->cpu_data();
@@ -105,7 +107,6 @@ void PSROIPoolingLayer::Forward_cpu(const vector<Blob*>& bottom,
   }
 }
 
-#ifndef USE_CUDA
 STUB_GPU(PSROIPoolingLayer);
 #endif
 

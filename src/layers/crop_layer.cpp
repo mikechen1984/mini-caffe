@@ -96,7 +96,9 @@ void CropLayer::crop_copy(const vector<Blob*>& bottom,
     }
   }
 }
-
+#ifdef USE_CUDA
+STUB_CPU(CropLayer);
+#else
 void CropLayer::Forward_cpu(const vector<Blob*>& bottom,
                             const vector<Blob*>& top) {
   std::vector<int> indices(top[0]->num_axes(), 0);
@@ -105,7 +107,6 @@ void CropLayer::Forward_cpu(const vector<Blob*>& bottom,
   crop_copy(bottom, top, offsets, indices, 0, bottom_data, top_data, true);
 }
 
-#ifndef USE_CUDA
 STUB_GPU(CropLayer);
 #endif
 

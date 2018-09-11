@@ -33,7 +33,7 @@ int Caffe::FindDevice(const int start_id) {
 #else  // Normal GPU + CPU Caffe.
 
 Caffe::Caffe()
-    : cublas_handle_(NULL), mode_(Caffe::CPU) {
+    : cublas_handle_(NULL), mode_(Caffe::GPU) {
   // Try to create a cublas handler, and report an error if failed (but we will
   // keep the program running as one might just want to run CPU code).
   if (cublasCreate(&cublas_handle_) != CUBLAS_STATUS_SUCCESS) {

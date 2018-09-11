@@ -33,7 +33,9 @@ void EltwiseLayer::Reshape(const vector<Blob*>& bottom,
   }
   top[0]->ReshapeLike(*bottom[0]);
 }
-
+#ifdef USE_CUDA
+STUB_CPU(EltwiseLayer);
+#else
 void EltwiseLayer::Forward_cpu(const vector<Blob*>& bottom,
                                const vector<Blob*>& top) {
   int* mask = NULL;
@@ -77,7 +79,7 @@ void EltwiseLayer::Forward_cpu(const vector<Blob*>& bottom,
   }
 }
 
-#ifndef USE_CUDA
+
 STUB_GPU(EltwiseLayer);
 #endif
 

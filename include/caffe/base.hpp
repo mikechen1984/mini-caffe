@@ -37,6 +37,7 @@ private:                                              \
 // is executed we will see a fatal log.
 #define NOT_IMPLEMENTED LOG(FATAL) << "Not Implemented Yet"
 #define NO_GPU LOG(FATAL) << "Cannot use GPU in CPU-only Caffe: check mode."
+#define NO_CPU LOG(FATAL) << "Cannot use CPU in GPU-only Caffe: check mode."
 
 namespace caffe {
 

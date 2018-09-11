@@ -12,6 +12,9 @@ namespace caffe {
 inline real_t sigmoid(real_t x) {
   return 1. / (1. + exp(-x));
 }
+#ifdef USE_CUDA
+STUB_CPU(SigmoidLayer);
+#else
 
 void SigmoidLayer::Forward_cpu(const vector<Blob*>& bottom,
                                const vector<Blob*>& top) {
@@ -23,7 +26,6 @@ void SigmoidLayer::Forward_cpu(const vector<Blob*>& bottom,
   }
 }
 
-#ifndef USE_CUDA
 STUB_GPU(SigmoidLayer);
 #endif
 

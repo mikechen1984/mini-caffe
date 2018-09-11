@@ -92,6 +92,19 @@ void LRNLayer::Reshape(const vector<Blob*>& bottom,
   }
 }
 
+
+void LRNLayer::WithinChannelForward(const vector<Blob*>& bottom,
+                                    const vector<Blob*>& top) {
+  split_layer_->Forward(bottom, split_top_vec_);
+  square_layer_->Forward(square_bottom_vec_, square_top_vec_);
+  pool_layer_->Forward(square_top_vec_, pool_top_vec_);
+  power_layer_->Forward(pool_top_vec_, power_top_vec_);
+  product_layer_->Forward(product_bottom_vec_, top);
+}
+#ifdef USE_CUDA
+STUB_CPU(LRNLayer);
+STUB_CPU_FORWARD(LRNLayer, CrossChannelForward);
+#else
 void LRNLayer::Forward_cpu(const vector<Blob*>& bottom,
                            const vector<Blob*>& top) {
   switch (this->layer_param_.lrn_param().norm_region()) {
@@ -152,16 +165,7 @@ void LRNLayer::CrossChannelForward_cpu(const vector<Blob*>& bottom,
   caffe_mul(scale_.count(), top_data, bottom_data, top_data);
 }
 
-void LRNLayer::WithinChannelForward(const vector<Blob*>& bottom,
-                                    const vector<Blob*>& top) {
-  split_layer_->Forward(bottom, split_top_vec_);
-  square_layer_->Forward(square_bottom_vec_, square_top_vec_);
-  pool_layer_->Forward(square_top_vec_, pool_top_vec_);
-  power_layer_->Forward(pool_top_vec_, power_top_vec_);
-  product_layer_->Forward(product_bottom_vec_, top);
-}
 
-#ifndef USE_CUDA
 STUB_GPU(LRNLayer);
 STUB_GPU_FORWARD(LRNLayer, CrossChannelForward);
 #endif

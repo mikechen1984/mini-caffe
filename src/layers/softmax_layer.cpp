@@ -26,6 +26,9 @@ void SoftmaxLayer::Reshape(const vector<Blob*>& bottom,
   scale_.Reshape(scale_dims);
 }
 
+#ifdef USE_CUDA
+STUB_CPU(SoftmaxLayer);
+#else
 void SoftmaxLayer::Forward_cpu(const vector<Blob*>& bottom,
                                const vector<Blob*>& top) {
   const real_t* bottom_data = bottom[0]->cpu_data();
@@ -62,7 +65,7 @@ void SoftmaxLayer::Forward_cpu(const vector<Blob*>& bottom,
   }
 }
 
-#ifndef USE_CUDA
+
 STUB_GPU(SoftmaxLayer);
 #endif
 
