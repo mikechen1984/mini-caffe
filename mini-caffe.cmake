@@ -3,9 +3,6 @@
 option(USE_CUDA "Use CUDA support" OFF)
 option(USE_CUDNN "Use CUDNN support" OFF)
 
-# select BLAS
-set(BLAS "openblas" CACHE STRING "Selected BLAS library")
-
 include(${CMAKE_CURRENT_LIST_DIR}/cmake/Cuda.cmake)
 
 if(USE_JAVA)
